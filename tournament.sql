@@ -8,20 +8,16 @@
 
 
 DROP DATABASE IF EXISTS tournament;
-DROP TABLE IF EXISTS players;
-DROP TABLE IF EXISTS matches_and_results;
-
 CREATE DATABASE tournament;
+\c tournament
 
 CREATE TABLE players (
     id smallint PRIMARY KEY,
     name text );
 
-CREATE TABLE matches_and_results (
+CREATE TABLE matches (
     match_id smallint PRIMARY KEY,
     player1 smallint,
     player2 smallint,
     winner smallint );
-
-\c tournament
 
