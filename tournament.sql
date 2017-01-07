@@ -12,11 +12,11 @@ CREATE DATABASE tournament;
 \c tournament
 
 CREATE TABLE players (
-    id smallint PRIMARY KEY,
+    id serial PRIMARY KEY,
     name text );
 
 CREATE TABLE matches (
-    match_id smallint PRIMARY KEY,
+    match_id serial PRIMARY KEY,
     player1 smallint,
     player2 smallint,
     winner smallint );

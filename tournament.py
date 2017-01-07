@@ -50,24 +50,34 @@ def registerPlayer(name):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("INSERT INTO players VALUE (%s)", (name,))
+    c.execute("INSERT INTO players(name) VALUES(%s)", (name,))
     conn.commit()
     conn.close()
 
 
-# def playerStandings():
-#     """Returns a list of the players and their win records, sorted by wins.
+def playerStandings():
+    """Returns a list of the players and their win records, sorted by wins.
 
-#     The first entry in the list should be the player in first place, or a player
-#     tied for first place if there is currently a tie.
+    The first entry in the list should be the player in first place, or a player
+    tied for first place if there is currently a tie.
 
-#     Returns:
-#       A list of tuples, each of which contains (id, name, wins, matches):
-#         id: the player's unique id (assigned by the database)
-#         name: the player's full name (as registered)
-#         wins: the number of matches the player has won
-#         matches: the number of matches the player has played
-#     """
+    Returns:
+      A list of tuples, each of which contains (id, name, wins, matches):
+        id: the player's unique id (assigned by the database)
+        name: the player's full name (as registered)
+        wins: the number of matches the player has won
+        matches: the number of matches the player has played
+    """
+
+    conn = connect()
+    c = conn.cursor()
+    c.execute("""SELECT players.id, players.name,
+                 (SELECT COUNT(*) FROM matches WHERE players.id = matches.winner) as num_wins,
+                 (SELECT COUNT(*) FROM matches WHERE players.id = matches.player1
+                 OR players.id = matches.player2) as num_matches FROM players
+                 ORDER BY num_wins DESC;""")
+    conn.commit()
+    conn.close()
 
 
 # def reportMatch(winner, loser):
