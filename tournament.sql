@@ -7,8 +7,8 @@
 -- these lines here.
 
 
-DROP DATABASE IF EXISTS tournament;
-CREATE DATABASE tournament;
+/* DROP DATABASE IF EXISTS tournament; */
+/* CREATE DATABASE tournament; */
 \c tournament
 
 CREATE TABLE players (
@@ -17,7 +17,5 @@ CREATE TABLE players (
 
 CREATE TABLE matches (
     match_id serial PRIMARY KEY,
-    player1 smallint,
-    player2 smallint,
-    winner smallint );
-
+    winner serial,
+    loser serial );

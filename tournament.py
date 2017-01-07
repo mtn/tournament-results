@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# 
+#
 # tournament.py -- implementation of a Swiss-system tournament
 #
 
@@ -73,36 +73,65 @@ def playerStandings():
     c = conn.cursor()
     c.execute("""SELECT players.id, players.name,
                  (SELECT COUNT(*) FROM matches WHERE players.id = matches.winner) as num_wins,
-                 (SELECT COUNT(*) FROM matches WHERE players.id = matches.player1
-                 OR players.id = matches.player2) as num_matches FROM players
+                 (SELECT COUNT(*) FROM matches WHERE players.id = matches.winner
+                 OR players.id = matches.loser) as num_matches FROM players
                  ORDER BY num_wins DESC;""")
+    s = c.fetchall()
+    conn.commit()
+    conn.close()
+    return s
+
+
+def reportMatch(winner, loser):
+    """Records the outcome of a single match between two players.
+
+    Args:
+      winner:  the id number of the player who won
+      loser:  the id number of the player who lost
+    """
+
+    conn = connect()
+    c = conn.cursor()
+    c.execute("INSERT INTO matches (winner,loser) VALUES (%s,%s);" % (winner,loser))
     conn.commit()
     conn.close()
 
 
-# def reportMatch(winner, loser):
-#     """Records the outcome of a single match between two players.
+def swissPairings():
+    """Returns a list of pairs of players for the next round of a match.
 
-#     Args:
-#       winner:  the id number of the player who won
-#       loser:  the id number of the player who lost
-#     """
- 
- 
-# def swissPairings():
-#     """Returns a list of pairs of players for the next round of a match.
-  
-#     Assuming that there are an even number of players registered, each player
-#     appears exactly once in the pairings.  Each player is paired with another
-#     player with an equal or nearly-equal win record, that is, a player adjacent
-#     to him or her in the standings.
-  
-#     Returns:
-#       A list of tuples, each of which contains (id1, name1, id2, name2)
-#         id1: the first player's unique id
-#         name1: the first player's name
-#         id2: the second player's unique id
-#         name2: the second player's name
-#     """
+    Assuming that there are an even number of players registered, each player
+    appears exactly once in the pairings.  Each player is paired with another
+    player with an equal or nearly-equal win record, that is, a player adjacent
+    to him or her in the standings.
+
+    Returns:
+      A list of tuples, each of which contains (id1, name1, id2, name2)
+        id1: the first player's unique id
+        name1: the first player's name
+        id2: the second player's unique id
+        name2: the second player's name
+    """
+    standings = playerStandings()
+    # print standings[0][0:2]
+    pairs = zip(standings[1::2],standings[0::2])
+    pairs = [ (x[0:2],y[0:2]) for (x,y) in pairs]
+
+    conn = connect()
+    c = conn.cursor()
+
+    for pair in pairs:
+        c.execute("SELECT name from players where id = (%s)" %  pair[0][0])
+        name1 = c.fetchall()
+        c.execute("SELECT name from players where id = (%s)" %  pair[1][0])
+        name2 = c.fetchall()
+        return (pair[0][0],name1[0][0],pair[1][0],name2[0][0])
+
+
+reportMatch(1,2)
+reportMatch(3,4)
+reportMatch(1,3)
+swissPairings()
+
 
 
