@@ -92,7 +92,7 @@ def reportMatch(winner, loser):
 
     conn = connect()
     c = conn.cursor()
-    c.execute("INSERT INTO matches (winner,loser) VALUES (%s,%s);" % (winner,loser))
+    c.execute("INSERT INTO matches (winner,loser) VALUES (%s,%s);", (winner,loser,))
     conn.commit()
     conn.close()
 
@@ -116,8 +116,4 @@ def swissPairings():
     standings = playerStandings()
     pairs = zip(standings[1::2],standings[0::2])
     pairs = [ (x[0:2],y[0:2]) for (x,y) in pairs]
-    a = []
-    for pair in pairs:
-        a.append((pair[0][0], pair[0][1], pair[1][0], pair[1][1]))
-
-    return a
+    return [(pair[0][0], pair[0][1], pair[1][0], pair[1][1]) for pair in pairs]
