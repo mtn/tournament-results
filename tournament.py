@@ -112,26 +112,12 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+
     standings = playerStandings()
-    # print standings[0][0:2]
     pairs = zip(standings[1::2],standings[0::2])
     pairs = [ (x[0:2],y[0:2]) for (x,y) in pairs]
-
-    conn = connect()
-    c = conn.cursor()
-
+    a = []
     for pair in pairs:
-        c.execute("SELECT name from players where id = (%s)" %  pair[0][0])
-        name1 = c.fetchall()
-        c.execute("SELECT name from players where id = (%s)" %  pair[1][0])
-        name2 = c.fetchall()
-        return (pair[0][0],name1[0][0],pair[1][0],name2[0][0])
+        a.append((pair[0][0], pair[0][1], pair[1][0], pair[1][1]))
 
-
-reportMatch(1,2)
-reportMatch(3,4)
-reportMatch(1,3)
-swissPairings()
-
-
-
+    return a
